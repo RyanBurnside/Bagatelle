@@ -56,6 +56,7 @@ LiquidCrystal lcd(LCD_REGISTER_SELECT, LCD_ENABLE_PIN, LCD_DATA_4, LCD_DATA_5, L
 
 // Global score variable
 unsigned int score = 0;
+unsigned char turns = 0; 
 
 // This is a buffer to hold our 8 inputs
 bool buf[8] = {0,0,0,0,0,0,0,0};
@@ -68,8 +69,13 @@ void update_lcd()
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Score: ");
-  lcd.setCursor(0, 1);
+  lcd.setCursor(6, 0);
   lcd.print(score);
+  lcd.setCursor(0, 1);
+  lcd.print("Turns: ");
+  lcd.setCursor(6
+  , 1);
+  lcd.print(turns);
 }
 
 void setup() 
@@ -105,7 +111,7 @@ void setup()
   
   for(char i = 0; i < 8; ++i)
   {
-    switches[i].WAIT_TICKS = 1000; // Heavy delay (ball bearings bounce!)
+    switches[i].WAIT_TICKS = 100; // Heavy delay (ball bearings bounce!)
     switches[i].point_value = point_table[i];
   }
 }
@@ -143,7 +149,11 @@ void loop()
   {
     unsigned int old_score = score;
     score += switches[i].update(buf[i]);
-    if(old_score != score){update_lcd();}
+    if(old_score != score)
+    {
+      turns++;
+      update_lcd();
+    }
   }
   
   delay(1); // 1 Millisec resolution for the BallSwitch array.
