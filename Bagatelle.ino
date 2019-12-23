@@ -18,6 +18,10 @@ const unsigned char LCD_DATA_5 = 14;
 const unsigned char LCD_DATA_6 = 16;
 const unsigned char LCD_DATA_7 = 10;
 
+const unsigned char BUZZ_PIN = 21;
+const unsigned int BUZZ_MILLISECS = 150;
+unsigned int buzz_counter = 0;
+
 class BallSwitch
 // Each cycle feed it the switch value, it will ignore new inputs until after the switch is read open and x millisecs have passed
 {
@@ -107,12 +111,28 @@ void setup()
   // Priming score display
   update_lcd();
 
+  // Buzzer
+  pinMode(BUZZ_PIN, OUTPUT);
+  digitalWrite(BUZZ_PIN, LOW);
   unsigned char point_table[8] = {30, 27, 24, 21, 19, 16, 13, 10};
   
   for(char i = 0; i < 8; ++i)
   {
     switches[i].WAIT_TICKS = 100; // Heavy delay (ball bearings bounce!)
     switches[i].point_value = point_table[i];
+  }
+}
+
+void buzz_update()
+{
+  if(buzz_counter > 0)
+  {
+    digitalWrite(BUZZ_PIN, HIGH);
+    buzz_counter -= 1;
+  }
+  else
+  {
+    digitalWrite(BUZZ_PIN, LOW);
   }
 }
 
@@ -153,8 +173,9 @@ void loop()
     {
       turns++;
       update_lcd();
+      buzz_counter = BUZZ_MILLISECS; 
     }
   }
-  
+  buzz_update();
   delay(1); // 1 Millisec resolution for the BallSwitch array.
 }
